@@ -7,6 +7,11 @@ const mongoose = require('mongoose');
 // create express app
 const app = express();
 
+//get data as per deployment evnt
+var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
+    ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || 'localhost',
+    mongoURL = dbConfig.url || process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL
+
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
 
@@ -34,7 +39,7 @@ var userAuth = {
 }
 
 // Connecting to the database
-mongoose.connect(dbConfig.url, userAuth)
+mongoose.connect(mongoURL, userAuth)
     .then(() => {
         console.log("Successfully connected to the database");
     }).catch(err => {
@@ -58,6 +63,7 @@ app.get('/', (req, res) => {
 require('./app/routes/note.routes')(app);
 
 // listen for requests
-app.listen(8080, () => {
-    console.log("Server is listening on port 8080");
+app.listen(port, ip, () => {
+    //console.log("Server is listening on port 8080");
+    console.log('Server running on http://%s:%s', ip, port);
 });
