@@ -1,6 +1,9 @@
 module.exports = (app) => {
     const notes = require('../controllers/note.controller');
 
+    //Get Hosted API Details
+    //app.get('/api',)
+
     // Create a new Note
     app.post('/api/notes', notes.create);
 
