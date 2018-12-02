@@ -8,15 +8,18 @@ const mongoose = require('mongoose');
 const app = express();
 
 //get data as per deployment evnt
-var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
-    ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || 'localhost',
-    mongoURL = dbConfig.url || process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL
+// var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
+// ip = process.env.IP || process.env.OPENSHIFT_NODEJS_IP || 'localhost',
+var port = process.env.PORT || 8080;
+var ip = process.env.IP || 'localhost';
+var mongoURL = dbConfig.url || process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL;
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
 
 // parse requests of content-type - application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+app.set('trust proxy', true);
 
 mongoose.Promise = global.Promise;
 
@@ -63,11 +66,17 @@ app.get('/', (req, res) => {
 require('./app/routes/note.routes')(app);
 
 // listen for requests
-app.listen(port, ip, () => {
+
+// To Run Local enable this line
+//app.listen(port, ip || 'localhost', () => {
+
+//To run on Google cloud enable this line
+app.listen(process.env.PORT, process.env.IP, () => {
     //console.log("Server is listening on port 8080");
     console.log('Server running on http://%s:%s', ip, port);
 });
 
+module.exports = app;
 
 
 
@@ -77,7 +86,7 @@ app.listen(port, ip, () => {
 // var express = require('express'),
 //     app     = express(),
 //     morgan  = require('morgan');
-    
+
 // Object.assign=require('object-assign')
 
 // app.engine('html', require('ejs').renderFile);
